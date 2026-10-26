@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Secure File Transfer System{% endblock %}</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="flex flex-col min-h-screen bg-slate-950 font-sans antialiased text-slate-200">
+
+  <!-- Navbar -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand & Security Shield Icon -->
+      <a href="/" class="flex items-center space-x-3 text-white hover:text-blue-400 transition-colors">
+        <div class="p-2 bg-blue-600/20 border border-blue-500/30 rounded-lg text-blue-400">
+          <!-- Shield Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <div>
+          <span class="font-bold tracking-tight text-lg text-white">SecureTransfer</span>
+          <span class="hidden sm:inline-block ml-1 text-xs px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">ENCRYPTED</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="flex items-center space-x-3">
+        {% if user %}
+          <a href="/dashboard" class="px-3 py-1.5 text-sm font-medium rounded-md text-slate-300 hover:text-white hover:bg-slate-800 transition">Dashboard</a>
+          <a href="/upload" class="px-3 py-1.5 text-sm font-medium rounded-md text-slate-300 hover:text-white hover:bg-slate-800 transition">Upload File</a>
+          <a href="/logs" class="px-3 py-1.5 text-sm font-medium rounded-md text-slate-300 hover:text-white hover:bg-slate-800 transition">Audit Logs</a>
+
+          <!-- User Badge -->
+          <div class="hidden md:flex items-center space-x-2 pl-3 border-l border-slate-800 text-xs text-slate-400 font-mono">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-slate-200 font-semibold">{{ user.username }}</span>
+          </div>
+
+          <!-- Logout Button -->
+          <button onclick="handleLogout()" class="px-3 py-1.5 text-xs font-semibold rounded-md bg-slate-800 text-rose-400 border border-slate-700 hover:bg-rose-500/10 hover:border-rose-500/30 transition">
+            Logout
+          </button>
+        {% else %}
+          <a href="/login" class="px-3 py-1.5 text-sm font-medium rounded-md text-slate-300 hover:text-white hover:bg-slate-800 transition">Login</a>
+          <a href="/register" class="px-3.5 py-1.5 text-sm font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-500 shadow-sm transition">Register</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/80 bg-slate-900/60 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>B.Tech Major Project • Cybersecurity Secure File Transfer System</p>
+      <p class="font-mono text-slate-400">Fernet Envelope Encryption • bcrypt • PostgreSQL BYTEA</p>
+    </div>
+  </footer>
+
+  <!-- Global Logout Script -->
+  <script>
+    async function handleLogout() {
+      try {
+        await fetch('/auth/logout', { method: 'POST' });
+      } catch (e) {
+        console.error(e);
+      } finally {
+        // Clear document cookies as well
+        document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        window.location.href = '/login';
+      }
+    }
+  </script>
+</body>
+</html>

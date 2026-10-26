@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Security Audit Logs — Secure File Transfer System{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-800">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-white flex items-center space-x-2">
+        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <span>Security Audit Trail</span>
+      </h1>
+      <p class="text-sm text-slate-400 mt-1">
+        Immutable, chronological logging of security events (Registration, Authentication, File Uploads).
+      </p>
+    </div>
+
+    <div>
+      <a
+        href="/dashboard"
+        class="inline-flex items-center px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium border border-slate-700 transition space-x-1.5"
+      >
+        <span>&larr; Back to Dashboard</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl shadow-black/30">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-slate-300">
+        <thead class="bg-slate-950/60 text-xs uppercase font-semibold text-slate-400 border-b border-slate-800">
+          <tr>
+            <th class="px-6 py-3.5">Log ID</th>
+            <th class="px-6 py-3.5">Timestamp (UTC)</th>
+            <th class="px-6 py-3.5">Action</th>
+            <th class="px-6 py-3.5">Status</th>
+            <th class="px-6 py-3.5">User</th>
+            <th class="px-6 py-3.5">Transfer Ref</th>
+            <th class="px-6 py-3.5">Details</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800/60 font-normal">
+          {% if logs %}
+            {% for log in logs %}
+              <tr class="hover:bg-slate-800/40 transition">
+                <td class="px-6 py-4 font-mono text-xs text-slate-400">#{{ log.id }}</td>
+                <td class="px-6 py-4 text-xs font-mono text-slate-400">
+                  {{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else 'N/A' }}
+                </td>
+                <td class="px-6 py-4 font-semibold text-xs text-white">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-mono">
+                    {{ log.action }}
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  {% if log.status == 'SUCCESS' %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      SUCCESS
+                    </span>
+                  {% else %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                      FAILURE
+                    </span>
+                  {% endif %}
+                </td>
+                <td class="px-6 py-4 font-mono text-xs text-blue-400">
+                  {% if log.user %}
+                    @{{ log.user.username }}
+                  {% elif log.user_id %}
+                    User #{{ log.user_id }}
+                  {% else %}
+                    <span class="text-slate-500">Unauthenticated</span>
+                  {% endif %}
+                </td>
+                <td class="px-6 py-4 font-mono text-xs text-slate-400">
+                  {% if log.transfer_id %}
+                    <span class="text-blue-400 font-semibold">#{{ log.transfer_id }}</span>
+                  {% else %}
+                    <span class="text-slate-600">—</span>
+                  {% endif %}
+                </td>
+                <td class="px-6 py-4 text-xs text-slate-300 max-w-md truncate" title="{{ log.detail or '' }}">
+                  {{ log.detail or '—' }}
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="7" class="px-6 py-10 text-center text-slate-500 text-sm">
+                No audit logs recorded yet.
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
